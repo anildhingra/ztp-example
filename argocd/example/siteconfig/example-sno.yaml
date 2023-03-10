@@ -9,8 +9,8 @@ spec:
   baseDomain: "example.com"
   pullSecretRef:
     name: "assisted-deployment-pull-secret"
-  clusterImageSetNameRef: "openshift-4.10"
-  sshPublicKey: "ssh-rsa AAAA..."
+  clusterImageSetNameRef: "img4.11.29-x86-64-appsub"
+  sshPublicKey: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDTRFJW25i4tcV3DK4XNv5QphiYpkO8ZucwwKvTccrJv6TtFUyiOatcnhxTkhmRo+GUMGJhbvXG8D8J5AeZo8DSOS1u7xHDsAUbA6eFiKF/bSJhOOCDKx/1SQb/42Cgwj8AT5dL1mhnqSHP+bPEWidxnO809cWePutZKB7HXifR6DetJUlNzA9AVdKjDVAMNpcVoV56IugR82aHvutwQzid1BS00gr/A71VRE0VV/O7gOB9BGQO+KgtTbbf4GjTB1A1X+DY2+Kkv9NHc5vH8XBk5hwIokaH8rwQ/dl3rO9AXAeADHx8Cs8rkkEeztiVUkNLALeJYNldF+oxh6FidkL9hzCEVWzgQUg0aSWpQHGEnAuqqWWpJRsOIic+6BEgIhokFL1x1coPivxlOmuYno6nsGx0Te0NrUdOjPxjpnxDcyBV8uglegWYCEJuoCgJekvFq2svLchKHWUhU0D0TVwYjFq0iNKi18HgDMjE3mmVTNyOkmIQLofZIKnYUmpU33M= m3@fs-anz-lab-08.lab.eng.rdu2.redhat.com"
   clusters:
   - clusterName: "example-sno"
     networkType: "OVNKubernetes"
@@ -21,25 +21,25 @@ spec:
     # components.
     # Notes:
     # - NodeTuning is needed for 4.13 and later, not for 4.12 and earlier
-    installConfigOverrides:  "{\"capabilities\":{\"baselineCapabilitySet\": \"None\", \"additionalEnabledCapabilities\": [ \"marketplace\", \"NodeTuning\" ] }}"
+    #installConfigOverrides:  "{\"capabilities\":{\"baselineCapabilitySet\": \"None\", \"additionalEnabledCapabilities\": [ \"marketplace\", \"NodeTuning\" ] }}"
     clusterLabels:
       # These example cluster labels correspond to the bindingRules in the PolicyGenTemplate examples in ../policygentemplates:
       # ../policygentemplates/common-ranGen.yaml will apply to all clusters with 'common: true'
-      common: true
+      # common: true
       # ../policygentemplates/group-du-sno-ranGen.yaml will apply to all clusters with 'group-du-sno: ""'
-      group-du-sno: ""
+      # group-du-sno: ""
       # ../policygentemplates/example-sno-site.yaml will apply to all clusters with 'sites: "example-sno"'
       # Normally this should match or contain the cluster name so it only applies to a single cluster
-      sites : "example-sno"
+      # sites : "example-sno"
     clusterNetwork:
-      - cidr: 1001:1::/48
-        hostPrefix: 64
+      - cidr: 10.128.0.0/14
+        hostPrefix: 23
     machineNetwork:
-      - cidr: 1111:2222:3333:4444::/64
+      - cidr: 192.168.111.0/24
     serviceNetwork:
-      - 1001:2::/112
-    additionalNTPSources:
-      - 1111:2222:3333:4444::2
+      - 172.30.0.0/16
+    #additionalNTPSources:
+    #  - 1111:2222:3333:4444::2
     # Optionally; This can be used to override the KlusterletAddonConfig that is created for this cluster:
     #crTemplates:
     #  KlusterletAddonConfig: "KlusterletAddonConfigOverride.yaml"
@@ -49,14 +49,14 @@ spec:
         # Optionally; This can be used to configure desired BIOS setting on a host:
         #biosConfigRef:
         #  filePath: "example-hw.profile"
-        bmcAddress: "idrac-virtualmedia+https://[1111:2222:3333:4444::bbbb:1]/redfish/v1/Systems/System.Embedded.1"
+        bmcAddress: "redfish-virtualmedia+http://192.168.111.1:8000/redfish/v1/Systems/99adc585-7a94-4d05-8f50-eba665ec02ce"
         bmcCredentialsName:
           name: "example-node1-bmh-secret"
-        bootMACAddress: "AA:BB:CC:DD:EE:11"
+        bootMACAddress: "52:54:00:23:b2:b4"
         # Use UEFISecureBoot to enable secure boot
         bootMode: "UEFI"
-        rootDeviceHints:
-          wwn: "0x11111000000asd123"
+#        rootDeviceHints:
+#          wwn: "0x11111000000asd123"
         # example of diskPartition below is used for image registry (check ImageRegistry.md for more details), but it's not limited to this use case
 #        diskPartition:
 #          - device: /dev/disk/by-id/wwn-0x11111000000asd123 # match rootDeviceHints
@@ -64,36 +64,40 @@ spec:
 #              - mount_point: /var/imageregistry
 #                size: 102500
 #                start: 344844
-        cpuset: "0-1,20-21" # match the value with PerformanceProfile's .spec.cpu.reserved for workload partitioning. See /example/policygentemplates/group-du-sno-ranGen.yaml
+#        cpuset: "0-1,20-21" # match the value with PerformanceProfile's .spec.cpu.reserved for workload partitioning. See /example/policygentemplates/group-du-sno-ranGen.yaml
         nodeNetwork:
           interfaces:
-            - name: eno1
-              macAddress: "AA:BB:CC:DD:EE:11"
+            - name: enp1s0
+              macAddress: "52:54:00:23:b2:b4"
           config:
             interfaces:
-              - name: eno1
+              - name: enp1s0
                 type: ethernet
                 state: up
-                macAddress: "AA:BB:CC:DD:EE:11"
+                macAddress: "52:54:00:23:b2:b4"
                 ipv4:
-                  enabled: false
-                ipv6:
                   enabled: true
                   address:
+                  - ip: 192.168.111.32
+                    prefix-length: 24
+                  dhcp: false
+                ipv6:
+                  enabled: false
+                #  address:
                   # For SNO sites with static IP addresses, the node-specific,
                   # API and Ingress IPs should all be the same and configured on
                   # the interface
-                  - ip: 1111:2222:3333:4444::aaaa:1
-                    prefix-length: 64
+                #  - ip: 1111:2222:3333:4444::aaaa:1
+                #    prefix-length: 64
             dns-resolver:
               config:
                 search:
-                - example.com
+                - example-sno.example.com
                 server:
-                - 1111:2222:3333:4444::2
+                - 192.168.111.1
             routes:
               config:
-              - destination: ::/0
-                next-hop-interface: eno1
-                next-hop-address: 1111:2222:3333:4444::1
+              - destination: 0.0.0.0/0
+                next-hop-interface: enp1s0
+                next-hop-address: 192.168.111.1
                 table-id: 254
