@@ -3,36 +3,36 @@
 apiVersion: ran.openshift.io/v1
 kind: SiteConfig
 metadata:
-  name: "example-3node"
-  namespace: "example-3node"
+  name: "site3"
+  namespace: "site3"
 spec:
   baseDomain: "example.com"
   pullSecretRef:
-    name: "assisted-deployment-pull-secret"
-  clusterImageSetNameRef: "openshift-4.10"
-  sshPublicKey: "ssh-rsa AAAA..."
+    name: "pullsecret-cluster-site3"
+  clusterImageSetNameRef: "acmopenshift4.12.25"
+  sshPublicKey: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDRQb+spDn5O3ER5gyuRJV3pE4/OA5cp4kJbTnHh7u6ipqdF47jPwH+bCT0k/+dn8x2UAyts9mR8Vqdb7/vMBgAyceBvXp4ku/leIivwheWI3cilzNtLUm21sUQfN07aGKvCiA1bYfv3xR92yTgxFSKuNUpLnKCWA015QUKmVJp+EmRe5GuEbr4NYQvJ4PHikpjWG0x+yXBhLrL0RvODYS6Sw8RlsBFbhJFeMPKPqQcJCRzGvVLWBuQiJyMiQzB/F/+fmlHswS9w6PlEScHuIdvX5bK8Eod2YFx1lMGNHQTSphCmrhJQ6yTVoW+YQyX8g2AGeDl34mRuhcT96r0JbikIsi+3X48kdON9dqz6TgeCAwxWl0pSnmLwlmB00X7dwEF7XnKESqBB7qZP86q821HYcK0n6Xvt5wnPUJXlkp/6M1WTUm2zJwAIuxp+Y0EMpEFWi+9VmOWk5usiGOKzRseHYyP1o39apoYmfPRO64AyyMHOuMYoNAVpvHH5dnm9ZE= m3@hpe-dl380gen10-02.hpe2.lab.eng.bos.redhat.com"
   clusters:
-  - clusterName: "example-3node"
+  - clusterName: "site3"
     networkType: "OVNKubernetes"
     clusterLabels:
       # These example cluster labels correspond to the bindingRules in the PolicyGenTemplate examples in ../policygentemplates:
       # ../policygentemplates/common-ranGen.yaml will apply to all clusters with 'common: true'
       common: true
       # ../policygentemplates/group-du-3node-ranGen.yaml will apply to all clusters with 'group-du-3node: ""'
-      group-du-3node: ""
+      #group-du-3node: ""
       # ../policygentemplates/example-multinode-site.yaml will apply to all clusters with 'sites: "example-multinode"'
       # Normally this should match or contain the cluster name so it only applies to a single cluster
-      sites : "example-multinode"
+      #sites : "example-multinode"
     clusterNetwork:
-      - cidr: 1001:1::/48
-        hostPrefix: 64
+      - cidr: 10.128.0.0/14
+        hostPrefix: 23
     # For 3-node and standard clusters with static IPs, the API and Ingress IPs must be configured here
-    apiVIP: 1111:2222:3333:4444::1:1
-    ingressVIP: 1111:2222:3333:4444::1:2
+    apiVIP: 192.168.40.5
+    ingressVIP: 192.168.40.4
     serviceNetwork:
-      - 1001:2::/112
-    additionalNTPSources:
-      - 1111:2222:3333:4444::2
+      - 172.30.0.0/16
+   # additionalNTPSources:
+    #  - 1111:2222:3333:4444::2
     # Optionally; This can be used to override the KlusterletAddonConfig that is created for this cluster:
     #crTemplates:
     #  KlusterletAddonConfig: "KlusterletAddonConfigOverride.yaml"
@@ -40,7 +40,7 @@ spec:
     #biosConfigRef:
     #  filePath: "example-hw.profile"
     nodes:
-      - hostName: "example-node1.example.com"
+      - hostName: "node1.example.com"
         role: "master"
         bmcAddress: "idrac-virtualmedia+https://[1111:2222:3333:4444::bbbb:1]/redfish/v1/Systems/System.Embedded.1"
         bmcCredentialsName:
