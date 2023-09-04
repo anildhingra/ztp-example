@@ -29,6 +29,8 @@ spec:
     # For 3-node and standard clusters with static IPs, the API and Ingress IPs must be configured here
     apiVIP: 192.168.40.5
     ingressVIP: 192.168.40.4
+    machineNetwork:
+      - cidr: 192.168.40.0/24
     serviceNetwork:
       - 172.30.0.0/16
    # additionalNTPSources:
@@ -40,118 +42,165 @@ spec:
     #biosConfigRef:
     #  filePath: "example-hw.profile"
     nodes:
-      - hostName: "node1.example.com"
+      - hostName: "site1"
         role: "master"
-        bmcAddress: "idrac-virtualmedia+https://[1111:2222:3333:4444::bbbb:1]/redfish/v1/Systems/System.Embedded.1"
+        # Optionally; This can be used to configure desired BIOS setting on a host:
+        #biosConfigRef:
+        #  filePath: "example-hw.profile"
+        bmcAddress: "redfish-virtualmedia+http://192.168.111.1:8000/redfish/v1/Systems/cfcaebce-2e18-4612-a982-8024f35432be"
         bmcCredentialsName:
-          name: "example-node1-bmh-secret"
-        bootMACAddress: "AA:BB:CC:DD:EE:11"
-        # Use UEFISecureBoot to enable secure boot for this node
+          name: "site3"
+        bootMACAddress: "00:83:a4:32:4b:3e"
+        # Use UEFISecureBoot to enable secure boot
         bootMode: "UEFI"
         rootDeviceHints:
-          hctl: '0:1:0'
+          deviceName: "/dev/sda"
+        # example of diskPartition below is used for image registry (check ImageRegistry.md for more details), but it's not limited to this use case
+#        diskPartition:
+#          - device: /dev/disk/by-id/wwn-0x11111000000asd123 # match rootDeviceHints
+#            partitions:
+#              - mount_point: /var/imageregistry
+#                size: 102500
+#                start: 344844
         nodeNetwork:
           interfaces:
-            - name: eno1
-              macAddress: "AA:BB:CC:DD:EE:11"
+            - name: enp2s0
+              macAddress: "00:83:a4:32:4b:36"
           config:
             interfaces:
-              - name: eno1
+              - name: enp2s0
                 type: ethernet
                 state: up
-                macAddress: "AA:BB:CC:DD:EE:11"
                 ipv4:
-                  enabled: false
-                ipv6:
                   enabled: true
                   address:
-                  - ip: 1111:2222:3333:4444::aaaa:1
-                    prefix-length: 64
+                  - ip: 192.168.40.28
+                    prefix-length: 24
+                ipv6:
+                  enabled: false
+                  address:
+                  # For SNO sites with static IP addresses, the node-specific,
+                  # API and Ingress IPs should all be the same and configured on
+                  # the interface
+                  #- ip: 1111:2222:3333:4444::aaaa:1
+                  #  prefix-length: 64
             dns-resolver:
               config:
                 search:
-                - example.com
+                - site3.example.com
                 server:
-                - 1111:2222:3333:4444::2
+                - 192.168.40.1
             routes:
               config:
-              - destination: ::/0
-                next-hop-interface: eno1
-                next-hop-address: 1111:2222:3333:4444::1
+              - destination: 0.0.0.0/0
+                next-hop-interface: enp2s0
+                next-hop-address: 192.168.40.1
                 table-id: 254
-      - hostName: "example-node2.example.com"
+      - hostName: "site1"
         role: "master"
-        bmcAddress: "idrac-virtualmedia+https://[1111:2222:3333:4444::bbbb:2]/redfish/v1/Systems/System.Embedded.1"
+        # Optionally; This can be used to configure desired BIOS setting on a host:
+        #biosConfigRef:
+        #  filePath: "example-hw.profile"
+        bmcAddress: "redfish-virtualmedia+http://192.168.111.1:8000/redfish/v1/Systems/cfcaebce-2e18-4612-a982-8024f35432be"
         bmcCredentialsName:
-          name: "example-node2-bmh-secret"
-        bootMACAddress: "AA:BB:CC:DD:EE:22"
+          name: "site3"
+        bootMACAddress: "00:83:a4:32:4b:3e"
+        # Use UEFISecureBoot to enable secure boot
         bootMode: "UEFI"
         rootDeviceHints:
-          hctl: '0:1:0'
+          deviceName: "/dev/sda"
+        # example of diskPartition below is used for image registry (check ImageRegistry.md for more details), but it's not limited to this use case
+#        diskPartition:
+#          - device: /dev/disk/by-id/wwn-0x11111000000asd123 # match rootDeviceHints
+#            partitions:
+#              - mount_point: /var/imageregistry
+#                size: 102500
+#                start: 344844
         nodeNetwork:
           interfaces:
-            - name: eno1
-              macAddress: "AA:BB:CC:DD:EE:22"
+            - name: enp2s0
+              macAddress: "00:83:a4:32:4b:36"
           config:
             interfaces:
-              - name: eno1
+              - name: enp2s0
                 type: ethernet
                 state: up
-                macAddress: "AA:BB:CC:DD:EE:22"
                 ipv4:
-                  enabled: false
-                ipv6:
                   enabled: true
                   address:
-                  - ip: 1111:2222:3333:4444::aaaa:2
-                    prefix-length: 64
+                  - ip: 192.168.40.28
+                    prefix-length: 24
+                ipv6:
+                  enabled: false
+                  address:
+                  # For SNO sites with static IP addresses, the node-specific,
+                  # API and Ingress IPs should all be the same and configured on
+                  # the interface
+                  #- ip: 1111:2222:3333:4444::aaaa:1
+                  #  prefix-length: 64
             dns-resolver:
               config:
                 search:
-                - example.com
+                - site3.example.com
                 server:
-                - 1111:2222:3333:4444::2
+                - 192.168.40.1
             routes:
               config:
-              - destination: ::/0
-                next-hop-interface: eno1
-                next-hop-address: 1111:2222:3333:4444::1
+              - destination: 0.0.0.0/0
+                next-hop-interface: enp2s0
+                next-hop-address: 192.168.40.1
                 table-id: 254
-      - hostName: "example-node3.example.com"
+      - hostName: "site1"
         role: "master"
-        bmcAddress: "idrac-virtualmedia+https://[1111:2222:3333:4444::bbbb:3]/redfish/v1/Systems/System.Embedded.1"
+        # Optionally; This can be used to configure desired BIOS setting on a host:
+        #biosConfigRef:
+        #  filePath: "example-hw.profile"
+        bmcAddress: "redfish-virtualmedia+http://192.168.111.1:8000/redfish/v1/Systems/cfcaebce-2e18-4612-a982-8024f35432be"
         bmcCredentialsName:
-          name: "example-node3-bmh-secret"
-        bootMACAddress: "AA:BB:CC:DD:EE:33"
+          name: "site3"
+        bootMACAddress: "00:83:a4:32:4b:3e"
+        # Use UEFISecureBoot to enable secure boot
         bootMode: "UEFI"
         rootDeviceHints:
-          hctl: '0:1:0'
+          deviceName: "/dev/sda"
+        # example of diskPartition below is used for image registry (check ImageRegistry.md for more details), but it's not limited to this use case
+#        diskPartition:
+#          - device: /dev/disk/by-id/wwn-0x11111000000asd123 # match rootDeviceHints
+#            partitions:
+#              - mount_point: /var/imageregistry
+#                size: 102500
+#                start: 344844
         nodeNetwork:
           interfaces:
-            - name: eno1
-              macAddress: "AA:BB:CC:DD:EE:33"
+            - name: enp2s0
+              macAddress: "00:83:a4:32:4b:36"
           config:
             interfaces:
-              - name: eno1
+              - name: enp2s0
                 type: ethernet
                 state: up
-                macAddress: "AA:BB:CC:DD:EE:33"
                 ipv4:
-                  enabled: false
-                ipv6:
                   enabled: true
                   address:
-                  - ip: 1111:2222:3333:4444::aaaa:3
-                    prefix-length: 64
+                  - ip: 192.168.40.28
+                    prefix-length: 24
+                ipv6:
+                  enabled: false
+                  address:
+                  # For SNO sites with static IP addresses, the node-specific,
+                  # API and Ingress IPs should all be the same and configured on
+                  # the interface
+                  #- ip: 1111:2222:3333:4444::aaaa:1
+                  #  prefix-length: 64
             dns-resolver:
               config:
                 search:
-                - example.com
+                - site3.example.com
                 server:
-                - 1111:2222:3333:4444::2
+                - 192.168.40.1
             routes:
               config:
-              - destination: ::/0
-                next-hop-interface: eno1
-                next-hop-address: 1111:2222:3333:4444::1
+              - destination: 0.0.0.0/0
+                next-hop-interface: enp2s0
+                next-hop-address: 192.168.40.1
                 table-id: 254
