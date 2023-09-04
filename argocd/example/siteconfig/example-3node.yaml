@@ -42,7 +42,7 @@ spec:
     #biosConfigRef:
     #  filePath: "example-hw.profile"
     nodes:
-      - hostName: "site1"
+      - hostName: "node1"
         role: "master"
         # Optionally; This can be used to configure desired BIOS setting on a host:
         #biosConfigRef:
@@ -65,7 +65,7 @@ spec:
         nodeNetwork:
           interfaces:
             - name: enp2s0
-              macAddress: "00:83:a4:32:4b:36"
+              macAddress: "00:83:a4:32:4b:3e"
           config:
             interfaces:
               - name: enp2s0
@@ -96,15 +96,15 @@ spec:
                 next-hop-interface: enp2s0
                 next-hop-address: 192.168.40.1
                 table-id: 254
-      - hostName: "site1"
+      - hostName: "node2"
         role: "master"
         # Optionally; This can be used to configure desired BIOS setting on a host:
         #biosConfigRef:
         #  filePath: "example-hw.profile"
-        bmcAddress: "redfish-virtualmedia+http://192.168.111.1:8000/redfish/v1/Systems/cfcaebce-2e18-4612-a982-8024f35432be"
+        bmcAddress: "redfish-virtualmedia+http://192.168.111.1:8000/redfish/v1/Systems/66d3bbc0-f9c3-48bc-8ae1-ba2f7f77363b"
         bmcCredentialsName:
           name: "site3"
-        bootMACAddress: "00:83:a4:32:4b:3e"
+        bootMACAddress: "00:83:a4:32:4b:42"
         # Use UEFISecureBoot to enable secure boot
         bootMode: "UEFI"
         rootDeviceHints:
@@ -119,7 +119,7 @@ spec:
         nodeNetwork:
           interfaces:
             - name: enp2s0
-              macAddress: "00:83:a4:32:4b:36"
+              macAddress: "00:83:a4:32:4b:42"
           config:
             interfaces:
               - name: enp2s0
@@ -128,7 +128,7 @@ spec:
                 ipv4:
                   enabled: true
                   address:
-                  - ip: 192.168.40.28
+                  - ip: 192.168.40.29
                     prefix-length: 24
                 ipv6:
                   enabled: false
@@ -150,15 +150,15 @@ spec:
                 next-hop-interface: enp2s0
                 next-hop-address: 192.168.40.1
                 table-id: 254
-      - hostName: "site1"
+      - hostName: "node3"
         role: "master"
         # Optionally; This can be used to configure desired BIOS setting on a host:
         #biosConfigRef:
         #  filePath: "example-hw.profile"
-        bmcAddress: "redfish-virtualmedia+http://192.168.111.1:8000/redfish/v1/Systems/cfcaebce-2e18-4612-a982-8024f35432be"
+        bmcAddress: "redfish-virtualmedia+http://192.168.111.1:8000/redfish/v1/Systems/8c449c45-34d4-4652-95cb-ec66db163e6a"
         bmcCredentialsName:
           name: "site3"
-        bootMACAddress: "00:83:a4:32:4b:3e"
+        bootMACAddress: "00:83:a4:32:4b:46"
         # Use UEFISecureBoot to enable secure boot
         bootMode: "UEFI"
         rootDeviceHints:
@@ -173,7 +173,7 @@ spec:
         nodeNetwork:
           interfaces:
             - name: enp2s0
-              macAddress: "00:83:a4:32:4b:36"
+              macAddress: "00:83:a4:32:4b:46"
           config:
             interfaces:
               - name: enp2s0
@@ -182,7 +182,7 @@ spec:
                 ipv4:
                   enabled: true
                   address:
-                  - ip: 192.168.40.28
+                  - ip: 192.168.40.30
                     prefix-length: 24
                 ipv6:
                   enabled: false
